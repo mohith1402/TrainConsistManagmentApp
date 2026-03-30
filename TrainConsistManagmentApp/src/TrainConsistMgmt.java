@@ -1,33 +1,34 @@
 /*
- * UC5: Preserve Insertion Order of Bogies (LinkedHashSet)
+ * UC6: Map Bogie to Capacity (HashMap)
  *
  * @author Mohith
- * @version 5.0
+ * @version 6.0
  */
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TrainConsistMgmt {
 
     public static void main(String[] args) {
-        System.out.println("UC5 Preserve Insertion Order of Bogies\n");
+        System.out.println("UC6 Map Bogie to Capacity (HashMap)\n");
 
-        Set<String> trainFormation = new LinkedHashSet<>();
+        Map<String, Integer> bogieCapacity = new HashMap<>();
 
-        trainFormation.add("Engine");
-        trainFormation.add("Sleeper");
-        trainFormation.add("Cargo");
-        trainFormation.add("Guard");
+        bogieCapacity.put("First Class", 24);
+        bogieCapacity.put("Cargo", 120);
+        bogieCapacity.put("Sleeper", 72);
+        bogieCapacity.put("AC Chair", 56);
 
-        trainFormation.add("Sleeper");
+        System.out.println("Bogie Capacity Details:");
+        for (Map.Entry<String, Integer> entry : bogieCapacity.entrySet()) {
+            if (entry.getKey().equals("AC Chair")) {
+                System.out.println(entry.getKey() + " -> " + entry.getValue());
+            } else {
+                System.out.println(entry.getKey() + " -> " + entry.getValue());
+            }
+        }
 
-        System.out.println("Final Train Formation:");
-        System.out.println(trainFormation + "\n");
-
-        System.out.println("Note:");
-        System.out.println("LinkedHashSet preserves insertion order and removes duplicates automatically.\n");
-
-        System.out.println("UC5 formation setup completed...");
+        System.out.println("\nUC6 bogie-capacity mapping completed...");
     }
 }
