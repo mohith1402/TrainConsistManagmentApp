@@ -1,71 +1,70 @@
 import org.junit.Test;
-import java.util.ArrayList;
-import java.util.List;
-import static org.junit.Assert.assertEquals;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class TrainConsistMgmtTest {
 
-    private int calculateTotalCapacity(List<Bogie> bogies) {
-        return bogies.stream()
-                .map(b -> b.capacity)
-                .reduce(0, Integer::sum);
+    private boolean validateTrainID(String trainId) {
+        if (trainId == null) return false;
+        Pattern pattern = Pattern.compile("^TRN-\\d{4}$");
+        Matcher matcher = pattern.matcher(trainId);
+        return matcher.matches();
+    }
+
+    private boolean validateCargoCode(String cargoCode) {
+        if (cargoCode == null) return false;
+        Pattern pattern = Pattern.compile("^PET-[A-Z]{2}$");
+        Matcher matcher = pattern.matcher(cargoCode);
+        return matcher.matches();
     }
 
     @Test
-    public void testReduce_SingleBogieCapacity() {
-        List<Bogie> bogies = new ArrayList<>();
-        bogies.add(new Bogie("Sleeper", 72));
-
-        int total = calculateTotalCapacity(bogies);
-
-        assertEquals(72, total);
+    public void testRegex_ValidTrainID() {
+        assertTrue(validateTrainID("TRN-1234"));
     }
 
     @Test
-    public void testReduce_EmptyBogieList() {
-        List<Bogie> bogies = new ArrayList<>();
-
-        int total = calculateTotalCapacity(bogies);
-
-        assertEquals(0, total);
+    public void testRegex_InvalidTrainIDFormat() {
+        assertFalse(validateTrainID("TRAIN12"));
+        assertFalse(validateTrainID("TRN12A"));
+        assertFalse(validateTrainID("1234-TRN"));
     }
 
     @Test
-    public void testReduce_CorrectCapacityExtraction() {
-        List<Bogie> bogies = new ArrayList<>();
-        bogies.add(new Bogie("First Class", 24));
-        bogies.add(new Bogie("AC Chair", 56));
-
-        int total = calculateTotalCapacity(bogies);
-
-        assertEquals(80, total);
+    public void testRegex_ValidCargoCode() {
+        assertTrue(validateCargoCode("PET-AB"));
     }
 
     @Test
-    public void testReduce_AllBogiesIncluded() {
-        List<Bogie> bogies = new ArrayList<>();
-        bogies.add(new Bogie("Sleeper", 72));
-        bogies.add(new Bogie("AC Chair", 56));
-        bogies.add(new Bogie("First Class", 24));
-        bogies.add(new Bogie("General", 90));
-
-        int total = calculateTotalCapacity(bogies);
-
-        assertEquals(242, total);
+    public void testRegex_InvalidCargoCodeFormat() {
+        assertFalse(validateCargoCode("PET123"));
+        assertFalse(validateCargoCode("AB-PET"));
     }
 
     @Test
-    public void testReduce_OriginalListUnchanged() {
-        List<Bogie> bogies = new ArrayList<>();
-        bogies.add(new Bogie("Sleeper", 72));
-        bogies.add(new Bogie("First Class", 24));
+    public void testRegex_TrainIDDigitLengthValidation() {
+        assertFalse(validateTrainID("TRN-123"));
+        assertFalse(validateTrainID("TRN-12345"));
+    }
 
-        int total = calculateTotalCapacity(bogies);
+    @Test
+    public void testRegex_CargoCodeUppercaseValidation() {
+        assertFalse(validateCargoCode("PET-ab"));
+        assertFalse(validateCargoCode("PET-Ab"));
+    }
 
-        assertEquals(96, total);
+    @Test
+    public void testRegex_EmptyInputHandling() {
+        assertFalse(validateTrainID(""));
+        assertFalse(validateCargoCode(""));
+    }
 
-        assertEquals(2, bogies.size());
-        assertEquals("Sleeper", bogies.get(0).name);
-        assertEquals("First Class", bogies.get(1).name);
+    @Test
+    public void testRegex_ExactPatternMatch() {
+        assertFalse(validateTrainID("TRN-1234EXTRA"));
+        assertFalse(validateCargoCode("PET-ABEXTRA"));
+        assertFalse(validateTrainID("EXTRATRN-1234"));
     }
 }
