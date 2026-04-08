@@ -1,104 +1,80 @@
 import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class TrainConsistMgmtTest {
 
-    private List<Bogie> filterBogies(List<Bogie> bogies, int threshold) {
+    // Helper method simulating the grouping logic from UC9
+    private Map<String, List<Bogie>> groupBogiesByType(List<Bogie> bogies) {
         return bogies.stream()
-                .filter(b -> b.capacity > threshold)
-                .collect(Collectors.toList());
+                .collect(Collectors.groupingBy(b -> b.name));
     }
 
     @Test
-    public void testFilter_CapacityGreaterThanThreshold() {
+    public void testGrouping_EmptyBogieList() {
+        List<Bogie> bogies = new ArrayList<>();
+
+        Map<String, List<Bogie>> groupedBogies = groupBogiesByType(bogies);
+
+        assertTrue(groupedBogies.isEmpty());
+    }
+
+    @Test
+    public void testGrouping_SingleBogieCategory() {
         List<Bogie> bogies = new ArrayList<>();
         bogies.add(new Bogie("Sleeper", 72));
+        bogies.add(new Bogie("Sleeper", 70));
 
-        List<Bogie> result = filterBogies(bogies, 60);
+        Map<String, List<Bogie>> groupedBogies = groupBogiesByType(bogies);
 
-        assertEquals(1, result.size());
-        assertEquals("Sleeper", result.get(0).name);
+        assertEquals(1, groupedBogies.size());
+        assertTrue(groupedBogies.containsKey("Sleeper"));
+        assertEquals(2, groupedBogies.get("Sleeper").size());
     }
 
     @Test
-    public void testFilter_CapacityEqualToThreshold() {
-        List<Bogie> bogies = new ArrayList<>();
-        bogies.add(new Bogie("Special", 60));
-
-        List<Bogie> result = filterBogies(bogies, 60);
-
-        assertEquals(0, result.size());
-    }
-
-    @Test
-    public void testFilter_CapacityLessThanThreshold() {
-        List<Bogie> bogies = new ArrayList<>();
-        bogies.add(new Bogie("First Class", 24));
-
-        List<Bogie> result = filterBogies(bogies, 60);
-
-        assertEquals(0, result.size());
-    }
-
-    @Test
-    public void testFilter_MultipleBogiesMatching() {
+    public void testGrouping_MapContainsCorrectKeys() {
         List<Bogie> bogies = new ArrayList<>();
         bogies.add(new Bogie("Sleeper", 72));
-        bogies.add(new Bogie("General", 90));
+        bogies.add(new Bogie("AC Chair", 56));
         bogies.add(new Bogie("First Class", 24));
 
-        List<Bogie> result = filterBogies(bogies, 60);
+        Map<String, List<Bogie>> groupedBogies = groupBogiesByType(bogies);
 
-        assertEquals(2, result.size());
-        assertTrue(result.stream().anyMatch(b -> b.name.equals("Sleeper")));
-        assertTrue(result.stream().anyMatch(b -> b.name.equals("General")));
+        assertEquals(3, groupedBogies.size());
+        assertTrue(groupedBogies.containsKey("Sleeper"));
+        assertTrue(groupedBogies.containsKey("AC Chair"));
+        assertTrue(groupedBogies.containsKey("First Class"));
     }
 
     @Test
-    public void testFilter_NoBogiesMatching() {
+    public void testGrouping_GroupSizeValidation() {
         List<Bogie> bogies = new ArrayList<>();
-        bogies.add(new Bogie("First Class", 24));
+        bogies.add(new Bogie("Sleeper", 72));
+        bogies.add(new Bogie("Sleeper", 70));
         bogies.add(new Bogie("AC Chair", 56));
 
-        List<Bogie> result = filterBogies(bogies, 60);
+        Map<String, List<Bogie>> groupedBogies = groupBogiesByType(bogies);
 
-        assertTrue(result.isEmpty());
+        assertEquals(2, groupedBogies.get("Sleeper").size());
+        assertEquals(1, groupedBogies.get("AC Chair").size());
     }
 
     @Test
-    public void testFilter_AllBogiesMatching() {
+    public void testGrouping_OriginalListUnchanged() {
         List<Bogie> bogies = new ArrayList<>();
         bogies.add(new Bogie("Sleeper", 72));
-        bogies.add(new Bogie("General", 90));
+        bogies.add(new Bogie("AC Chair", 56));
 
-        List<Bogie> result = filterBogies(bogies, 60);
+        Map<String, List<Bogie>> groupedBogies = groupBogiesByType(bogies);
 
-        assertEquals(2, result.size());
-    }
-
-    @Test
-    public void testFilter_EmptyBogieList() {
-        List<Bogie> bogies = new ArrayList<>();
-
-        List<Bogie> result = filterBogies(bogies, 60);
-
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    public void testFilter_OriginalListUnchanged() {
-        List<Bogie> bogies = new ArrayList<>();
-        bogies.add(new Bogie("Sleeper", 72));
-        bogies.add(new Bogie("First Class", 24));
-
-        List<Bogie> result = filterBogies(bogies, 60);
-
+        // Verify the original list is unaltered
         assertEquals(2, bogies.size());
         assertEquals("Sleeper", bogies.get(0).name);
-        assertEquals("First Class", bogies.get(1).name);
+        assertEquals("AC Chair", bogies.get(1).name);
     }
 }
