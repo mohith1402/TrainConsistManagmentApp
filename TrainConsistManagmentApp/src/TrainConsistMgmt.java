@@ -1,50 +1,58 @@
 /*
- * UC12: Safety Compliance Check for Goods Bogies
+ * UC13: Performance Comparison (Loops vs Streams)
  *
  * @author Mohith
- * @version 12.0
+ * @version 13.0
  */
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-class GoodsBogie {
+class Bogie {
     String type;
-    String cargo;
+    int capacity;
 
-    public GoodsBogie(String type, String cargo) {
+    public Bogie(String type, int capacity) {
         this.type = type;
-        this.cargo = cargo;
-    }
-
-    @Override
-    public String toString() {
-        return type + " -> " + cargo;
+        this.capacity = capacity;
     }
 }
 
 public class TrainConsistMgmt {
 
     public static void main(String[] args) {
-        System.out.println("UC12 Safety Compliance Check for Goods Bogies\n");
+        System.out.println("UC13 Performance Comparison (Loops vs Streams)\n");
 
-        List<GoodsBogie> bogies = new ArrayList<>();
-        bogies.add(new GoodsBogie("Cylindrical", "Petroleum"));
-        bogies.add(new GoodsBogie("Open", "Coal"));
-        bogies.add(new GoodsBogie("Box", "Grain"));
-        bogies.add(new GoodsBogie("Cylindrical", "Coal"));
+        List<Bogie> bogies = new ArrayList<>();
 
-        System.out.println("Goods Bogies:");
-        for (GoodsBogie b : bogies) {
-            System.out.println(b);
+        for (int i = 0; i < 100000; i++) {
+            bogies.add(new Bogie("Sleeper", 72));
+            bogies.add(new Bogie("AC Chair", 56));
+            bogies.add(new Bogie("First Class", 24));
+            bogies.add(new Bogie("General", 90));
         }
 
-        boolean isSafe = bogies.stream()
-                .allMatch(b -> !b.type.equals("Cylindrical") || b.cargo.equals("Petroleum"));
+        long loopStartTime = System.nanoTime();
+        List<Bogie> loopFiltered = new ArrayList<>();
+        for (Bogie b : bogies) {
+            if (b.capacity > 60) {
+                loopFiltered.add(b);
+            }
+        }
+        long loopEndTime = System.nanoTime();
+        long loopDuration = loopEndTime - loopStartTime;
 
-        System.out.println("\nSafety Compliance Result:"+ isSafe);
-        System.out.println("Is Train Safe? " + isSafe);
+        long streamStartTime = System.nanoTime();
+        List<Bogie> streamFiltered = bogies.stream()
+                .filter(b -> b.capacity > 60)
+                .collect(Collectors.toList());
+        long streamEndTime = System.nanoTime();
+        long streamDuration = streamEndTime - streamStartTime;
 
-        System.out.println("\nUC12 compliance check completed...");
+        System.out.println("Loop Execution Time (ns): " + loopDuration);
+        System.out.println("Stream Execution Time (ns): " + streamDuration);
+
+        System.out.println("\nUC13 performance benchmarking completed...");
     }
 }
