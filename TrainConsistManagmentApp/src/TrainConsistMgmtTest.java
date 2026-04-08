@@ -1,90 +1,51 @@
 import org.junit.Test;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public class TrainConsistMgmtTest {
 
-    private List<Bogie> loopFilter(List<Bogie> bogies) {
-        List<Bogie> filtered = new ArrayList<>();
-        for (Bogie b : bogies) {
-            if (b.capacity > 60) {
-                filtered.add(b);
-            }
+    @Test
+    public void testException_ValidCapacityCreation() throws InvalidCapacityException {
+        PassengerBogie bogie = new PassengerBogie("Sleeper", 72);
+        assertNotNull(bogie);
+    }
+
+    @Test(expected = InvalidCapacityException.class)
+    public void testException_NegativeCapacityThrowsException() throws InvalidCapacityException {
+        new PassengerBogie("General", -10);
+    }
+
+    @Test(expected = InvalidCapacityException.class)
+    public void testException_ZeroCapacityThrowsException() throws InvalidCapacityException {
+        new PassengerBogie("AC Chair", 0);
+    }
+
+    @Test
+    public void testException_ExceptionMessageValidation() {
+        try {
+            new PassengerBogie("First Class", -5);
+            fail("Expected InvalidCapacityException to be thrown");
+        } catch (InvalidCapacityException e) {
+            assertEquals("Capacity must be greater than zero", e.getMessage());
         }
-        return filtered;
-    }
-
-    private List<Bogie> streamFilter(List<Bogie> bogies) {
-        return bogies.stream()
-                .filter(b -> b.capacity > 60)
-                .collect(Collectors.toList());
     }
 
     @Test
-    public void testLoopFilteringLogic() {
-        List<Bogie> bogies = new ArrayList<>();
-        bogies.add(new Bogie("Sleeper", 72));
-        bogies.add(new Bogie("AC Chair", 56));
-
-        List<Bogie> result = loopFilter(bogies);
-
-        assertEquals(1, result.size());
-        assertEquals("Sleeper", result.get(0).type);
+    public void testException_ObjectIntegrityAfterCreation() throws InvalidCapacityException {
+        PassengerBogie bogie = new PassengerBogie("First Class", 24);
+        assertEquals("First Class", bogie.type);
+        assertEquals(24, bogie.capacity);
     }
 
     @Test
-    public void testStreamFilteringLogic() {
-        List<Bogie> bogies = new ArrayList<>();
-        bogies.add(new Bogie("Sleeper", 72));
-        bogies.add(new Bogie("AC Chair", 56));
+    public void testException_MultipleValidBogiesCreation() throws InvalidCapacityException {
+        PassengerBogie b1 = new PassengerBogie("Sleeper", 72);
+        PassengerBogie b2 = new PassengerBogie("AC Chair", 56);
+        PassengerBogie b3 = new PassengerBogie("First Class", 24);
 
-        List<Bogie> result = streamFilter(bogies);
-
-        assertEquals(1, result.size());
-        assertEquals("Sleeper", result.get(0).type);
-    }
-
-    @Test
-    public void testLoopAndStreamResultsMatch() {
-        List<Bogie> bogies = new ArrayList<>();
-        bogies.add(new Bogie("Sleeper", 72));
-        bogies.add(new Bogie("General", 90));
-        bogies.add(new Bogie("AC Chair", 56));
-        bogies.add(new Bogie("First Class", 24));
-
-        List<Bogie> loopResult = loopFilter(bogies);
-        List<Bogie> streamResult = streamFilter(bogies);
-
-        assertEquals(loopResult.size(), streamResult.size());
-    }
-
-    @Test
-    public void testExecutionTimeMeasurement() {
-        long startTime = System.nanoTime();
-
-        for (int i = 0; i < 1000; i++) { }
-
-        long endTime = System.nanoTime();
-        long elapsedTime = endTime - startTime;
-
-        assertTrue(elapsedTime > 0);
-    }
-
-    @Test
-    public void testLargeDatasetProcessing() {
-        List<Bogie> largeDataset = new ArrayList<>();
-        for (int i = 0; i < 10000; i++) {
-            largeDataset.add(new Bogie("Sleeper", 72));
-            largeDataset.add(new Bogie("First Class", 24));
-        }
-
-        List<Bogie> loopResult = loopFilter(largeDataset);
-        List<Bogie> streamResult = streamFilter(largeDataset);
-
-        assertEquals(10000, loopResult.size());
-        assertEquals(10000, streamResult.size());
+        assertNotNull(b1);
+        assertNotNull(b2);
+        assertNotNull(b3);
     }
 }
