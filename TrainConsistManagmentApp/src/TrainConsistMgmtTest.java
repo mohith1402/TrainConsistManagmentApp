@@ -1,80 +1,71 @@
 import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class TrainConsistMgmtTest {
 
-    // Helper method simulating the grouping logic from UC9
-    private Map<String, List<Bogie>> groupBogiesByType(List<Bogie> bogies) {
+    private int calculateTotalCapacity(List<Bogie> bogies) {
         return bogies.stream()
-                .collect(Collectors.groupingBy(b -> b.name));
+                .map(b -> b.capacity)
+                .reduce(0, Integer::sum);
     }
 
     @Test
-    public void testGrouping_EmptyBogieList() {
-        List<Bogie> bogies = new ArrayList<>();
-
-        Map<String, List<Bogie>> groupedBogies = groupBogiesByType(bogies);
-
-        assertTrue(groupedBogies.isEmpty());
-    }
-
-    @Test
-    public void testGrouping_SingleBogieCategory() {
+    public void testReduce_SingleBogieCapacity() {
         List<Bogie> bogies = new ArrayList<>();
         bogies.add(new Bogie("Sleeper", 72));
-        bogies.add(new Bogie("Sleeper", 70));
 
-        Map<String, List<Bogie>> groupedBogies = groupBogiesByType(bogies);
+        int total = calculateTotalCapacity(bogies);
 
-        assertEquals(1, groupedBogies.size());
-        assertTrue(groupedBogies.containsKey("Sleeper"));
-        assertEquals(2, groupedBogies.get("Sleeper").size());
+        assertEquals(72, total);
     }
 
     @Test
-    public void testGrouping_MapContainsCorrectKeys() {
+    public void testReduce_EmptyBogieList() {
+        List<Bogie> bogies = new ArrayList<>();
+
+        int total = calculateTotalCapacity(bogies);
+
+        assertEquals(0, total);
+    }
+
+    @Test
+    public void testReduce_CorrectCapacityExtraction() {
+        List<Bogie> bogies = new ArrayList<>();
+        bogies.add(new Bogie("First Class", 24));
+        bogies.add(new Bogie("AC Chair", 56));
+
+        int total = calculateTotalCapacity(bogies);
+
+        assertEquals(80, total);
+    }
+
+    @Test
+    public void testReduce_AllBogiesIncluded() {
         List<Bogie> bogies = new ArrayList<>();
         bogies.add(new Bogie("Sleeper", 72));
         bogies.add(new Bogie("AC Chair", 56));
         bogies.add(new Bogie("First Class", 24));
+        bogies.add(new Bogie("General", 90));
 
-        Map<String, List<Bogie>> groupedBogies = groupBogiesByType(bogies);
+        int total = calculateTotalCapacity(bogies);
 
-        assertEquals(3, groupedBogies.size());
-        assertTrue(groupedBogies.containsKey("Sleeper"));
-        assertTrue(groupedBogies.containsKey("AC Chair"));
-        assertTrue(groupedBogies.containsKey("First Class"));
+        assertEquals(242, total);
     }
 
     @Test
-    public void testGrouping_GroupSizeValidation() {
+    public void testReduce_OriginalListUnchanged() {
         List<Bogie> bogies = new ArrayList<>();
         bogies.add(new Bogie("Sleeper", 72));
-        bogies.add(new Bogie("Sleeper", 70));
-        bogies.add(new Bogie("AC Chair", 56));
+        bogies.add(new Bogie("First Class", 24));
 
-        Map<String, List<Bogie>> groupedBogies = groupBogiesByType(bogies);
+        int total = calculateTotalCapacity(bogies);
 
-        assertEquals(2, groupedBogies.get("Sleeper").size());
-        assertEquals(1, groupedBogies.get("AC Chair").size());
-    }
+        assertEquals(96, total);
 
-    @Test
-    public void testGrouping_OriginalListUnchanged() {
-        List<Bogie> bogies = new ArrayList<>();
-        bogies.add(new Bogie("Sleeper", 72));
-        bogies.add(new Bogie("AC Chair", 56));
-
-        Map<String, List<Bogie>> groupedBogies = groupBogiesByType(bogies);
-
-        // Verify the original list is unaltered
         assertEquals(2, bogies.size());
         assertEquals("Sleeper", bogies.get(0).name);
-        assertEquals("AC Chair", bogies.get(1).name);
+        assertEquals("First Class", bogies.get(1).name);
     }
 }
