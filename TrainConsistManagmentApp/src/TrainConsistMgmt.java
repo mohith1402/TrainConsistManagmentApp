@@ -1,8 +1,8 @@
 /*
- * UC16: Sort Passenger Bogies by Capacity (Bubble Sort – Algorithm Intro)
+ * UC17: Sort Bogie Names Using Arrays.sort()
  *
  * @author Mohith
- * @version 16.0
+ * @version 17.0
  */
 
 import java.util.Arrays;
@@ -10,25 +10,18 @@ import java.util.Arrays;
 public class TrainConsistMgmt {
 
     public static void main(String[] args) {
-        System.out.println("UC16 Sort Passenger Bogies by Capacity (Bubble Sort)\n");
+        System.out.println("UC17 Sort Bogie Names Using Arrays.sort()\n");
 
-        int[] capacities = {72, 56, 24, 70, 60};
+        String[] bogieNames = {"Sleeper", "AC Chair", "First Class", "General", "Luxury"};
 
-        System.out.println("Original Capacities: "+"\n"+ Arrays.toString(capacities));
+        System.out.println("Original Bogie Names:");
+        System.out.println(Arrays.toString(bogieNames));
 
-        int n = capacities.length;
-        for (int i = 0; i < n - 1; i++) {
-            for (int j = 0; j < n - i - 1; j++) {
-                if (capacities[j] > capacities[j + 1]) {
-                    int temp = capacities[j];
-                    capacities[j] = capacities[j + 1];
-                    capacities[j + 1] = temp;
-                }
-            }
-        }
+        Arrays.sort(bogieNames);
 
-        System.out.println(" ");
-        System.out.println("Sorted Capacities (Ascending): "+"\n"+ Arrays.toString(capacities));
-        System.out.println("\nUC16 manual sorting completed...");
+        System.out.println("\nSorted Bogie Names (Alphabetical):");
+        System.out.println(Arrays.toString(bogieNames));
+
+        System.out.println("\nUC17 sorting completed...");
     }
 }
