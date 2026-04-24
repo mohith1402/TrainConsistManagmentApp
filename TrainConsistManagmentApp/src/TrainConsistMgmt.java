@@ -1,27 +1,41 @@
 /*
- * UC17: Sort Bogie Names Using Arrays.sort()
+ * UC18: Linear Search for Bogie ID (Array-Based Searching)
  *
  * @author Mohith
- * @version 17.0
+ * @version 18.0
  */
 
-import java.util.Arrays;
-
-public class TrainConsistMgmt {
+public class UseCase18TrainConsistMgmt {
 
     public static void main(String[] args) {
-        System.out.println("UC17 Sort Bogie Names Using Arrays.sort()\n");
+        System.out.println("UC18 Linear Search for Bogie ID\n");
 
-        String[] bogieNames = {"Sleeper", "AC Chair", "First Class", "General", "Luxury"};
+        String[] bogieIds = {"BG101", "BG205", "BG309", "BG412", "BG550"};
+        String targetId = "BG309";
 
-        System.out.println("Original Bogie Names:");
-        System.out.println(Arrays.toString(bogieNames));
+        System.out.println("Train Consist: ");
+        for (String id : bogieIds) {
+            System.out.print(id + " ");
+        }
+        System.out.println("\n\nSearching for: " + targetId);
 
-        Arrays.sort(bogieNames);
+        boolean isFound = false;
+        int foundIndex = -1;
 
-        System.out.println("\nSorted Bogie Names (Alphabetical):");
-        System.out.println(Arrays.toString(bogieNames));
+        for (int i = 0; i < bogieIds.length; i++) {
+            if (bogieIds[i].equals(targetId)) {
+                isFound = true;
+                foundIndex = i;
+                break;
+            }
+        }
 
-        System.out.println("\nUC17 sorting completed...");
+        if (isFound) {
+            System.out.println("Result: Bogie " + targetId + " found at position " + foundIndex);
+        } else {
+            System.out.println("Result: Bogie " + targetId + " not found.");
+        }
+
+        System.out.println("\nUC18 search completed...");
     }
 }
