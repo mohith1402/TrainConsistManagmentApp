@@ -1,56 +1,74 @@
 import org.junit.Test;
 import java.util.Arrays;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class TrainConsistMgmtTest {
 
-    @Test
-    public void testSort_BasicAlphabeticalSorting() {
-        String[] bogieNames = {"Sleeper", "AC Chair", "First Class", "General", "Luxury"};
-        String[] expected = {"AC Chair", "First Class", "General", "Luxury", "Sleeper"};
+    private boolean binarySearch(String[] arr, String target) {
+        if (arr == null || arr.length == 0 || target == null) {
+            return false;
+        }
 
-        Arrays.sort(bogieNames);
+        Arrays.sort(arr);
 
-        assertArrayEquals(expected, bogieNames);
+        int left = 0;
+        int right = arr.length - 1;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            int comparison = arr[mid].compareTo(target);
+
+            if (comparison == 0) {
+                return true;
+            } else if (comparison < 0) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return false;
     }
 
     @Test
-    public void testSort_UnsortedInput() {
-        String[] bogieNames = {"Luxury", "General", "Sleeper", "AC Chair"};
-        String[] expected = {"AC Chair", "General", "Luxury", "Sleeper"};
-
-        Arrays.sort(bogieNames);
-
-        assertArrayEquals(expected, bogieNames);
+    public void testBinarySearch_BogieFound() {
+        String[] bogies = {"BG101", "BG205", "BG309", "BG412", "BG550"};
+        assertTrue(binarySearch(bogies, "BG309"));
     }
 
     @Test
-    public void testSort_AlreadySortedArray() {
-        String[] bogieNames = {"AC Chair", "First Class", "General"};
-        String[] expected = {"AC Chair", "First Class", "General"};
-
-        Arrays.sort(bogieNames);
-
-        assertArrayEquals(expected, bogieNames);
+    public void testBinarySearch_BogieNotFound() {
+        String[] bogies = {"BG101", "BG205", "BG309", "BG412", "BG550"};
+        assertFalse(binarySearch(bogies, "BG999"));
     }
 
     @Test
-    public void testSort_DuplicateBogieNames() {
-        String[] bogieNames = {"Sleeper", "AC Chair", "Sleeper", "General"};
-        String[] expected = {"AC Chair", "General", "Sleeper", "Sleeper"};
-
-        Arrays.sort(bogieNames);
-
-        assertArrayEquals(expected, bogieNames);
+    public void testBinarySearch_FirstElementMatch() {
+        String[] bogies = {"BG101", "BG205", "BG309", "BG412", "BG550"};
+        assertTrue(binarySearch(bogies, "BG101"));
     }
 
     @Test
-    public void testSort_SingleElementArray() {
-        String[] bogieNames = {"Sleeper"};
-        String[] expected = {"Sleeper"};
+    public void testBinarySearch_LastElementMatch() {
+        String[] bogies = {"BG101", "BG205", "BG309", "BG412", "BG550"};
+        assertTrue(binarySearch(bogies, "BG550"));
+    }
 
-        Arrays.sort(bogieNames);
+    @Test
+    public void testBinarySearch_SingleElementArray() {
+        String[] bogies = {"BG101"};
+        assertTrue(binarySearch(bogies, "BG101"));
+    }
 
-        assertArrayEquals(expected, bogieNames);
+    @Test
+    public void testBinarySearch_EmptyArray() {
+        String[] bogies = {};
+        assertFalse(binarySearch(bogies, "BG101"));
+    }
+
+    @Test
+    public void testBinarySearch_UnsortedInputHandled() {
+        String[] bogies = {"BG309", "BG101", "BG550", "BG205", "BG412"};
+        assertTrue(binarySearch(bogies, "BG205"));
     }
 }
