@@ -5,52 +5,30 @@
  * @version 15.0
  */
 
-class CargoSafetyException extends Exception {
-    public CargoSafetyException(String message) {
-        super(message);
-    }
-}
-
-class GoodsBogie {
-    String type;
-    String cargo;
-
-    public GoodsBogie(String type) {
-        this.type = type;
-    }
-
-    public void assignCargo(String cargo) throws CargoSafetyException {
-        if (this.type.equals("Rectangular") && cargo.equals("Petroleum")) {
-            throw new CargoSafetyException("Safety Violation: Cannot assign Petroleum to a Rectangular bogie.");
-        }
-        this.cargo = cargo;
-    }
-}
+import java.util.Arrays;
 
 public class TrainConsistMgmt {
 
     public static void main(String[] args) {
-        System.out.println("UC15 Safe Cargo Assignment Using try-catch-finally\n");
+        System.out.println("UC16 Sort Passenger Bogies by Capacity (Bubble Sort)\n");
 
-        GoodsBogie cylindricalBogie = new GoodsBogie("Cylindrical");
-        GoodsBogie rectangularBogie = new GoodsBogie("Rectangular");
+        int[] capacities = {72, 56, 24, 70, 60};
 
-        try {
-            System.out.println("Attempting safe assignment...");
-            cylindricalBogie.assignCargo("Petroleum");
-            System.out.println("Assigned Petroleum to Cylindrical bogie successfully.");
+        System.out.println("Original Capacities: "+"\n"+ Arrays.toString(capacities));
 
-            System.out.println("\nAttempting unsafe assignment...");
-            rectangularBogie.assignCargo("Petroleum");
-            System.out.println("Assigned Petroleum to Rectangular bogie successfully.");
-
-        } catch (CargoSafetyException e) {
-            System.out.println("Exception Caught: " + e.getMessage());
-        } finally {
-            System.out.println("\nValidation completion message executes.");
-            System.out.println("Train Consist safety check finalized.");
+        int n = capacities.length;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (capacities[j] > capacities[j + 1]) {
+                    int temp = capacities[j];
+                    capacities[j] = capacities[j + 1];
+                    capacities[j + 1] = temp;
+                }
+            }
         }
 
-        System.out.println("\nProgram continues execution after exception handling...");
+        System.out.println(" ");
+        System.out.println("Sorted Capacities (Ascending): "+"\n"+ Arrays.toString(capacities));
+        System.out.println("\nUC16 manual sorting completed...");
     }
 }
